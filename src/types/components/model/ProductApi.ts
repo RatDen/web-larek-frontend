@@ -27,7 +27,7 @@ export interface IOrder extends IContacts {
     items: string[];
 }
 
-export type TOrderFullInfo = Exclude<IOrder, 'items'>
+export type TOrderFullInfo = Omit<IOrder, 'items'>
 
 export type TOrderInfo = Pick<IOrder, 'payment' | 'address'>
 
@@ -36,7 +36,7 @@ export interface IOrderResult {
     total: number;
 }
 
-export interface IProductAPI {
+export interface IProductApi {
     getProducts(): Promise<ApiListResponse<IProduct>>;
     getProduct(id: string): Promise<IProduct>;
     pushOrder(order: IOrder): Promise<IOrderResult>;
