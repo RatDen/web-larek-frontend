@@ -37,15 +37,10 @@ export class Basket extends Component<ICatalogInfo, IBasketSettings> {
 			}
 		})
         this.setChildren(this.container, items);
+		this.actionButton.disabled = (items.length === 0);
     }
 
 	set total(value: number) {
 		this.setValue(this.settings.total, `${value} синапсов` )
-	}
-
-	render(data?: Partial<ICatalogInfo>): HTMLElement {
-		this.actionButton.disabled = (data.catalog.length === 0);
-
-		return super.render(data);
 	}
 }

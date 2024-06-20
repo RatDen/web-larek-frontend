@@ -27,7 +27,7 @@ export interface IOrder extends IContacts {
     items: string[];
 }
 
-export type TOrderFullInfo = Omit<IOrder, 'items'>
+export type TOrderFullInfo = Omit<IOrder, 'total' | 'items'>
 
 export type TOrderInfo = Pick<IOrder, 'payment' | 'address'>
 

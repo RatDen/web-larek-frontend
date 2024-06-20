@@ -221,6 +221,7 @@ export interface IProductAPI {
 
 Поля:
 - formName: string - name элемента формы ля удобного доступа
+- inputs: NodeListOf<HTMLInputElement> - инпуты формы
 - values: Record<string, string> - сохраняет значения инпутов формы
 - actionButton: HTMLButtonElement - элемент кнопки сабмита формы
 - errorsContainer: HTMLElement - элемент для вывода ошибок валидации
@@ -229,6 +230,7 @@ export interface IProductAPI {
 Методы:
 - getInputValues(): Record<string, string> - возвращает объект values
 - setValid(isValid: boolean): void - устанавливает валидность формы
+- clear():void - очищает поля формы
 - setErrors(data: Record<string, Array<string>>):void - выводит ошибки валидации
 - render(data?: Partial<IFormInfo>): HTMLElement - перед выполнением родительского render включает или выключает кнопку сабмита формы по состоянию isValid
 

@@ -1,7 +1,7 @@
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
-interface IFormInfo {
+export interface IFormInfo {
     inputs: HTMLInputElement[];
 }
 
@@ -14,6 +14,7 @@ export interface IFormSettings {
 
 export class Form extends Component<IFormInfo, IFormSettings> {
     protected formName: string;
+    protected inputs: NodeListOf<HTMLInputElement>;
     protected values: Record<string, string>;
     protected actionButton: HTMLButtonElement;
     protected errorsContainer: HTMLElement;
@@ -26,6 +27,7 @@ export class Form extends Component<IFormInfo, IFormSettings> {
 
         this.formName = this.element.getAttribute('name');
 
+        this.inputs = this.element.querySelectorAll(this.settings.inputs);
         this.values = {};
 
         this.element.addEventListener('input', (evt) => {
@@ -53,6 +55,13 @@ export class Form extends Component<IFormInfo, IFormSettings> {
 
     setValid(isValid: boolean) {
         this.isValid = isValid;
+    }
+
+    clear() {
+        this.inputs.forEach(input => {
+            input.value = '';
+        })
+        this.values = {};
     }
 
     setErrors(data: Record<string, Array<string>>) {

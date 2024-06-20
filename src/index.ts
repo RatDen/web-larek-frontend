@@ -6,7 +6,7 @@ import { OrderData } from './components/model/OrderData';
 import { ProductsData } from './components/model/ProductsData';
 import { Header } from './components/view/Header';
 import { Basket } from './components/view/Basket';
-import { Card, handleAddCard, handleDeleteCard } from './components/view/Card';
+import { Card } from './components/view/Card';
 import { CardsContainer } from './components/view/CardsContainer';
 import './scss/styles.scss';
 import { API_URL, constraintsContacts, constraintsOrder, settings } from './utils/constants';
@@ -51,11 +51,6 @@ const success = new OrderSuccess(cloneTemplate(templates.success), settings.orde
 // изначальная загрузка данных
 api.getProducts().then(response => {
     productsData.items = response.items;
-
-    cardsContainer.render({catalog: productsData.items.map(data => {
-        const card = new Card(cloneTemplate(templates.cardCatalog), settings.cardCatalog, events);
-        return card.render(data);
-    })});
 })
 .catch(res => console.log(res))
 
@@ -66,7 +61,12 @@ api.getProducts().then(response => {
 // выбор карточки для просмотра в модалке
 events.on('product:select', (evt: {product: string}) => {
     const data = productsData.getProduct(evt.product);
-    const card = new Card(cloneTemplate(templates.cardPreview), settings.cardPreview, events, handleAddCard);
+
+    const isDisabled = orderData.items.indexOf(data) !== -1 || data.price === null;
+    console.log(isDisabled)
+
+    const card = new Card(cloneTemplate(templates.cardPreview), settings.cardPreview, events, handleAddCard, isDisabled);
+
     modal.content = card.render(data);
     modal.open();
 })
@@ -109,6 +109,9 @@ events.on('contacts:submit', () => {
 
     api.pushOrder(orderData.order)
     .then(result => {
+        orderData.clear();
+        orderForm.clear();
+        contactsForm.clear();
         success.total = result.total;
         modal.content = success.render();
     })
@@ -131,6 +134,11 @@ events.on('contacts:input', (data: Record<keyof TOrderInfo | keyof IContacts, st
     events.emit('contacts:validated', {isValid: !result, result: result});
 })
 
+// изменение способа оплаты
+events.on('order:payment:changed', (data: Record<string, string>) => {
+    modal.content = orderForm.render(data);
+})
+
 // обработка формы заказа после валидации
 events.on('order:validated', (data: {isValid: boolean, result: {}}) => {
     orderForm.setValid(data.isValid);
@@ -149,7 +157,6 @@ events.on('contacts:validated', (data: {isValid: boolean, result: {}}) => {
 
 // нажатие на кнопку в окне успешного офрмления
 events.on('order:completed', () => {
-    orderData.clear();
     modal.close();
 })
 
@@ -157,6 +164,14 @@ events.on('order:completed', () => {
 events.on('items:changed', () => {
     refreshHeaderCounter();
 })
+
+// изменения в коталоге товаров
+events.on('products:changed', () => {
+    cardsContainer.render({catalog: productsData.items.map(data => {
+        const card = new Card(cloneTemplate(templates.cardCatalog), settings.cardCatalog, events);
+        return card.render(data);
+    })});
+});
 
 
 
@@ -174,4 +189,13 @@ function collectCatalog() {
         }),
         total: orderData.total
     }
+}
+
+// удаление и добавление карточки
+export function handleAddCard() {
+    this.events.emit('item:select', {product: this.cardId});
+}
+
+export function handleDeleteCard() {
+    this.events.emit('item:delete', {product: this.cardId});
 }

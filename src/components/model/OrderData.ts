@@ -18,7 +18,6 @@ export class OrderData implements IOrderData {
             address: '',
             email: '',
             phone: '',
-            total: 0,
         }
 
         this._items = [];
@@ -41,24 +40,8 @@ export class OrderData implements IOrderData {
         return this._orderInfo;
     }
 
-    set total(value: number) {
-        this._orderInfo.total = value;
-    }
-
     get total() {
-        return this._orderInfo.total;
-    }
-
-    get order() {
-        const order: IOrder = {
-            ...this._orderInfo,
-            items: this._items.map(item => item.id),
-        }
-        return order;
-    }
-
-    private getTotal() {
-        this.total = this._items.map(item => {
+        return this._items.map(item => {
             if (typeof item.price === 'number') {
                 return item.price;
             } else {
@@ -67,15 +50,17 @@ export class OrderData implements IOrderData {
         }).reduce((a, b) => a+b, 0);
     }
 
-    addItem(item: TProductCompact, callback?: Function | null): void {
-        if (!(this._items.indexOf(item) === -1)) {
-            alert('Этот товар уже в корзине.');
-            return;
+    get order() {
+        const order: IOrder = {
+            ...this._orderInfo,
+            total: this.total,
+            items: this._items.map(item => item.id),
         }
+        return order;
+    }
 
+    addItem(item: TProductCompact, callback?: Function | null): void {
         this._items = [...this._items, item];
-        
-        this.getTotal();
 
         if (callback) {
             callback();
@@ -87,8 +72,6 @@ export class OrderData implements IOrderData {
     deleteItem(id: string, callback?: Function | null): void {
         this._items = this._items.filter(item => item.id !== id);
 
-        this.getTotal();
-
         if (callback) {
             callback();
         }
@@ -98,8 +81,6 @@ export class OrderData implements IOrderData {
 
     clear() {
         this._items = [];
-
-        this.getTotal();
 
         this.events.emit('items:changed');
     }
@@ -119,10 +100,6 @@ export class OrderData implements IOrderData {
     }
 
     pushOrder(callback: Function): Promise<IOrderResult> {
-        const order: IOrder = {
-            ...this._orderInfo,
-            items: this._items.map(item => item.id),
-        }
-        return callback(order)
+        return callback(this.order)
     }
 }

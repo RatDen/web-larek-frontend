@@ -12,22 +12,15 @@ interface ICardSettings {
     price: string;
 }
 
-export function handleAddCard() {
-    this.events.emit('item:select', {product: this.cardId});
-}
-
-export function handleDeleteCard() {
-    this.events.emit('item:delete', {product: this.cardId});
-}
-
 export class Card extends Component<IProduct, Partial<ICardSettings>> {
     protected cardId: string;
 
-    constructor(element: HTMLElement, settings: Partial<ICardSettings>, events: IEvents, buttonCallback?: Function) {
+    constructor(element: HTMLElement, settings: Partial<ICardSettings>, events: IEvents, buttonCallback?: Function, isDisabled: boolean = false) {
         super(element, settings, events);
 
         if (settings.button && buttonCallback) {
-            const button = this.ensure(this.element, this.settings.button);
+            const button = this.ensure(this.element, this.settings.button) as HTMLButtonElement;
+            button.disabled = isDisabled;
             button.addEventListener('click', buttonCallback.bind(this))
         } else {
             this.element.addEventListener('click', () => {

@@ -79,34 +79,14 @@ export const constraintsOrder = {
     },
     'address': {
         presence: { message: 'Это поле не может быть пустым', allowEmpty: false },
-        length: {
-            minimum: 5,
-            maximum: 50,
-            tooShort: 'Необходимо минимум %{count} символов',
-            tooLong: 'Необходимо максимум %{count} символов',
-        }
     }
 }
 
 export const constraintsContacts = {
     'email': {
         presence: { message: 'Это поле не может быть пустым', allowEmpty: false },
-        length: {
-            minimum: 3,
-            maximum: 50,
-            tooShort: 'Необходимо минимум %{count} символов',
-            tooLong: 'Необходимо максимум %{count} символов',
-        },
-        format: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+.+.[a-zA-Z]{2,4}$",
     },
     'phone': {
         presence: { message: 'Это поле не может быть пустым', allowEmpty: false },
-        length: {
-            minimum: 7,
-            maximum: 20,
-            tooShort: 'Необходимо минимум %{count} символов',
-            tooLong: 'Необходимо максимум %{count} символов',
-        },
-        format: "^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$",
     }
 }
